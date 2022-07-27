@@ -14,27 +14,38 @@ import com.voidK.gitview.databinding.ActivityHomeBinding;
 import com.voidK.gitview.models.gitqueryrepo.GitQueryRepo;
 import com.voidK.gitview.viewmodels.HomeActivityViewModel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.http.Query;
 
 @AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity {
     private ActivityHomeBinding binding;
-    private String TAG = getClass().getName() + "ANIK";
+    private final String TAG = getClass().getName() + "ANIK";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home);
 
         HomeActivityViewModel viewModel = new ViewModelProvider(this).get(HomeActivityViewModel.class);
-        viewModel.getLiveData().observe(this, new Observer<List<GitQueryRepo>>() {
+        viewModel.getLiveData().observe(this, new Observer<GitQueryRepo>() {
             @Override
-            public void onChanged(List<GitQueryRepo> gitQueryRepos) {
+            public void onChanged(GitQueryRepo gitQueryRepos) {
                 Toast.makeText(HomeActivity.this, "Success response", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "on changed total count: " + gitQueryRepos.get(0).getTotalCount());
+                Log.d(TAG, "on changed first item: " + gitQueryRepos.getItems().get(0).getName() +" -- "+ gitQueryRepos.getItems().get(0).getUrl());
             }
         });
-        viewModel.repoQueryAPICall("Android");
+
+        // Query data
+        HashMap<String, Object> queryParams = new HashMap<>();
+        queryParams.put("q", "Android");
+        queryParams.put("sort", "stars"); // Can be one of: stars, forks, help-wanted-issues, updated
+        queryParams.put("order", "desc"); //Default: desc -- Can be one of: desc, asc
+        queryParams.put("per_page", 20); // Default: 30
+        queryParams.put("page", 1); // Default: 1
+
+        viewModel.repoQueryAPICall(HomeActivity.this, queryParams);
     }
 }

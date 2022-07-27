@@ -20,7 +20,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // To secure api base url and end point
+            buildConfigField "String", "GIT_API_BASE_URL", "\"https://api.github.com/\""
+            resValue("string", "API_QUERY_REPO", "search/repositories")
         }
+        debug {
+            // To secure api base url and end point
+            buildConfigField "String", "GIT_API_BASE_URL", "\"https://api.github.com/\""
+            resValue("string", "API_QUERY_REPO", "search/repositories")
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
