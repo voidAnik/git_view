@@ -16,6 +16,7 @@ import com.voidK.gitview.R;
 import com.voidK.gitview.models.GitQueryRepoModel.GitQueryRepoItem;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class GitRepoRcAdapter extends RecyclerView.Adapter<GitRepoRcAdapter.mViewModel> {
     List<GitQueryRepoItem> repos;
@@ -38,7 +39,7 @@ public class GitRepoRcAdapter extends RecyclerView.Adapter<GitRepoRcAdapter.mVie
 
     @Override
     public void onBindViewHolder(@NonNull GitRepoRcAdapter.mViewModel holder, int position) {
-        holder.bind(repos.get(position));
+        holder.bind(repos.get(holder.getAdapterPosition()));
     }
 
     @Override
@@ -48,7 +49,7 @@ public class GitRepoRcAdapter extends RecyclerView.Adapter<GitRepoRcAdapter.mVie
     }
 
     public static class mViewModel extends RecyclerView.ViewHolder{
-        TextView repo_name_text, language_text, privacy_text;
+        TextView repo_name_text, language_text, privacy_text, created_text;
         ImageView git_image;
         public mViewModel(@NonNull View itemView) {
             super(itemView);
@@ -56,15 +57,25 @@ public class GitRepoRcAdapter extends RecyclerView.Adapter<GitRepoRcAdapter.mVie
             language_text = itemView.findViewById(R.id.language_text);
             privacy_text = itemView.findViewById(R.id.privacy_text);
             git_image = itemView.findViewById(R.id.git_image);
+            created_text = itemView.findViewById(R.id.created_text);
         }
+        @SuppressLint("SetTextI18n")
         void bind(GitQueryRepoItem repoItem){
             repo_name_text.setText(repoItem.getName());
-            language_text.setText(repoItem.getLanguage());
+            if(repoItem.getLanguage() != null) {
+                language_text.setVisibility(View.VISIBLE);
+                language_text.setText(repoItem.getLanguage());
+            } else {
+                language_text.setVisibility(View.GONE);
+            }
             privacy_text.setText(repoItem.getVisibility());
+
+            String[] splitStr = repoItem.getCreated_at().split("T");
+            created_text.setText("Created: " + splitStr[0]);
 
             Glide.with(git_image)
                     .load(repoItem.getOwner().getAvatar_url())
-                    .placeholder(R.mipmap.ic_launcher)
+                    .placeholder(R.drawable.git_256)
                     .into(git_image);
         }
     }

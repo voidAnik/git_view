@@ -1,6 +1,7 @@
 package com.voidK.gitview.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -8,6 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.voidK.gitview.R;
@@ -33,12 +37,13 @@ public class HomeActivity extends AppCompatActivity {
     private final String TAG = getClass().getName() + "ANIK";
     HomeActivityViewModel viewModel;
     GitRepoRcAdapter gitRepoRcAdapter;
+    String[] sortItems = {"stars", "updated"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home);
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         viewModel = new ViewModelProvider(this).get(HomeActivityViewModel.class);
        /* viewModel.getLiveData().observe(this, new Observer<List<GitQueryRepoItem>>() {
             @Override
@@ -53,6 +58,7 @@ public class HomeActivity extends AppCompatActivity {
         });*/
 
         initRecyclerView();
+        initSortSpinner();
 
         String access_token = "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"; // demo access token
         preferences.setToken(access_token);
@@ -61,7 +67,7 @@ public class HomeActivity extends AppCompatActivity {
         HashMap<String, Object> queryParams = new HashMap<>();
         queryParams.put("q", "Android");
         queryParams.put("sort", "stars"); // Can be one of: stars, forks, help-wanted-issues, updated
-        queryParams.put("order", "desc"); //Default: desc -- Can be one of: desc, asc
+        queryParams.put("order", "asc"); //Default: desc -- Can be one of: desc, asc
         queryParams.put("per_page", 10); // Default: 30
         queryParams.put("page", page[0]); // Default: 1
 
@@ -81,7 +87,24 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
         viewModel.repoQueryAPICall(HomeActivity.this, queryParams);
+    }
 
+    private void initSortSpinner() {
+        //Creating the ArrayAdapter instance having the country list
+        ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,sortItems);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+        binding.spinner.setAdapter(aa);
+        binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i(TAG, "sort selected: "+ i);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Log.i(TAG, "sort selected: nothing");
+            }
+        });
     }
 
     private void initRecyclerView() {

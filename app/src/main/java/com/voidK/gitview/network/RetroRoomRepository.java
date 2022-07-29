@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
+import androidx.paging.DataSource;
 
 import com.voidK.gitview.R;
 import com.voidK.gitview.db.GitQueryDao;
@@ -40,24 +41,11 @@ public class RetroRoomRepository {
     }
 
     public LiveData<List<GitQueryRepoItem>> getAllQueryRepo() {
-        final LiveData<List<GitQueryRepoItem>> repos = gitQueryDao.getAllRepo();
-
-        mItemLive.addSource(repos, new Observer<List<GitQueryRepoItem>>() {
-            @Override
-            public void onChanged(@Nullable List<GitQueryRepoItem> itemList) {
-                if(itemList == null || itemList.isEmpty()) {
-                    Log.e(TAG, "item list is null");
-                    // Fetch data from API
-                    //callAPI(queryParams);
-                }else{
-                    Log.e(TAG, "item list is not null");
-                    mItemLive.removeSource(repos);
-                    mItemLive.setValue(itemList);
-                }
-            }
-        });
-        //return mItemLive;
         return gitQueryDao.getAllRepo();
+    }
+
+    public DataSource.Factory<Integer,GitQueryRepoItem> getAllQueryRepoPaged() {
+        return gitQueryDao.getPagedRepo();
     }
 
     void insertRecords(List<GitQueryRepoItem> repoItems){

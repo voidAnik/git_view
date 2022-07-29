@@ -1,6 +1,8 @@
 package com.voidK.gitview.db;
 
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.PagingSource;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -16,6 +18,9 @@ public interface GitQueryDao {
 
     @Query("SELECT * FROM query_repositories")
     LiveData<List<GitQueryRepoItem>>getAllRepo();
+
+    @Query("SELECT * FROM query_repositories")
+    DataSource.Factory<Integer,GitQueryRepoItem> getPagedRepo();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertRecords(List<GitQueryRepoItem> gitQueryRepoItems);

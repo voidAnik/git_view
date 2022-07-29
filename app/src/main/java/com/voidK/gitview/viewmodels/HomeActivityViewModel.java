@@ -5,6 +5,9 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 import com.voidK.gitview.models.GitQueryRepoModel.GitQueryRepoItem;
 import com.voidK.gitview.network.APIService;
@@ -38,6 +41,11 @@ public class HomeActivityViewModel extends ViewModel {
 
     public LiveData<List<GitQueryRepoItem>> getAllQueryRepoList(){
         return retroRoomRepository.getAllQueryRepo();
+    }
+    public LiveData<PagedList<GitQueryRepoItem>> getAllQueryRepoListPaged(PagedList.Config config){
+        DataSource.Factory<Integer,GitQueryRepoItem>factory = retroRoomRepository.getAllQueryRepoPaged();
+        return new LivePagedListBuilder<>(factory, config)
+                .build();
     }
 
     public void repoQueryAPICall(Context context, HashMap<String, Object> queryParams){

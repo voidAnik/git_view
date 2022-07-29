@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--Color Scheme-->
+    <color name="fire_opal">#EF6461</color>
+    <color name="pale_silver">#CCC5B9</color>
+    <color name="green_blue_crayola">#0083E0</color>
+    <color name="independence">#545E75</color>
+    <color name="maximum_blue_purple">#BBADFF</color>
+
+
 </resources>
