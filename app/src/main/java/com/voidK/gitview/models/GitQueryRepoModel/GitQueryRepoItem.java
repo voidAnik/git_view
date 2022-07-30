@@ -4,8 +4,10 @@ package com.voidK.gitview.models.GitQueryRepoModel;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity(tableName = "query_repositories")
-public class GitQueryRepoItem {
+public class GitQueryRepoItem implements Serializable {
 
     @PrimaryKey
     private Integer id;

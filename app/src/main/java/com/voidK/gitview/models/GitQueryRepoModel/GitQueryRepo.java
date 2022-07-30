@@ -5,14 +5,21 @@ import java.util.List;
 
 public class GitQueryRepo {
 
-
+private int total_count;
     private List<GitQueryRepoItem> items;
 
-    public GitQueryRepo() {
+
+    public GitQueryRepo(int total_count, List<GitQueryRepoItem> items) {
+        this.total_count = total_count;
+        this.items = items;
     }
 
-    public GitQueryRepo(List<GitQueryRepoItem> items) {
-        this.items = items;
+    public int getTotal_count() {
+        return total_count;
+    }
+
+    public void setTotal_count(int total_count) {
+        this.total_count = total_count;
     }
 
     public List<GitQueryRepoItem> getItems() {

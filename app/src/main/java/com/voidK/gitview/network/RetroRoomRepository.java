@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.paging.DataSource;
 
@@ -52,7 +53,7 @@ public class RetroRoomRepository {
         gitQueryDao.insertRecords(repoItems);
     }
 
-    public void callAPI(HashMap<String, Object> queryParams/*, MutableLiveData<List<GitQueryRepoItem>> liveData*/) {
+    public void callAPI(HashMap<String, Object> queryParams, MutableLiveData<GitQueryRepo> liveData) {
         String end_point = context.getString(R.string.API_QUERY_REPO);
         Log.i(TAG, "end_point: "+ end_point);
         Call<GitQueryRepo> call = apiService.searchGitRepo(end_point, queryParams);
@@ -65,9 +66,9 @@ public class RetroRoomRepository {
                     Log.i(TAG, "avatar url: " + response.body().getItems().get(0).getOwner().getAvatar_url());
                     //gitQueryDao.deleteAllRecords();
                     insertRecords(response.body().getItems());
-                    //liveData.postValue(response.body().getItems());
+                    liveData.postValue(response.body());
                 } else {
-                    //liveData.postValue(null);
+                    liveData.postValue(null);
                     Log.e(TAG, "response: " + "ERROR");
                 }
             }
@@ -75,7 +76,7 @@ public class RetroRoomRepository {
             @Override
             public void onFailure(@NonNull Call<GitQueryRepo> call, @NonNull Throwable t) {
                 Log.e(TAG, "response: " + "onFailure");
-                //liveData.postValue(null);
+                liveData.postValue(null);
             }
         });
     }

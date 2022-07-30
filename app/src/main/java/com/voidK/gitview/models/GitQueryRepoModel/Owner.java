@@ -6,9 +6,10 @@ import androidx.room.TypeConverter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 
-public class Owner {
+public class Owner implements Serializable {
 
     private String login;
     private Integer id;

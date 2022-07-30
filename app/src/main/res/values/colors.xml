@@ -11,9 +11,11 @@
     <!--Color Scheme-->
     <color name="fire_opal">#EF6461</color>
     <color name="pale_silver">#CCC5B9</color>
+    <color name="pale_silver_lite">#ECE9E4</color>
     <color name="green_blue_crayola">#0083E0</color>
     <color name="independence">#545E75</color>
     <color name="maximum_blue_purple">#BBADFF</color>
+    <color name="maximum_blue_purple_deep">#897DC3</color>
 
 
 </resources>

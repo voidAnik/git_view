@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.voidK.gitview">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MainApplication"
@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GitView"
         tools:targetApi="31">
+        <activity
+            android:name=".view.RepoDetailsActivity"
+            android:exported="false" />
         <activity
             android:name=".view.HomeActivity"
             android:exported="true">

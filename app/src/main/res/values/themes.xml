@@ -10,7 +10,10 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/maximum_blue_purple</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/maximum_blue_purple_deep</item>
         <!-- Customize your theme here. -->
+    </style>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:padding">8dp</item>
     </style>
 </resources>
