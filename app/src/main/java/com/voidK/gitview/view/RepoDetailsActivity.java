@@ -54,9 +54,23 @@ public class RepoDetailsActivity extends AppCompatActivity {
                 .into(binding.avatarImage);
         binding.nameText.setText(item.getOwner().getLogin());
         binding.descText.setText(item.getDescription());
-        SpannableString content = new SpannableString(item.getHtml_url());
-        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-        binding.urlText.setText(content);
+
+        SpannableString content1 = new SpannableString(item.getFull_name());
+        content1.setSpan(new UnderlineSpan(), 0, content1.length(), 0);
+        binding.fullNameText.setText(content1);
+        binding.fullNameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent urlIntent = new Intent(Intent.ACTION_VIEW);
+                urlIntent.setData(Uri.parse(item.getOwner().getHtml_url()));
+                startActivity(urlIntent);
+            }
+        });
+
+        SpannableString content2 = new SpannableString(item.getHtml_url());
+        content2.setSpan(new UnderlineSpan(), 0, content2.length(), 0);
+        binding.urlText.setText(content2);
+
         binding.urlText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,8 +82,10 @@ public class RepoDetailsActivity extends AppCompatActivity {
         try {
             String createdDate = getConvertedDateTime(item.getCreated_at());
             String updatedDate = getConvertedDateTime(item.getUpdated_at());
+            String pushedDate = getConvertedDateTime(item.getPushed_at());
             binding.createdAtText.setText("Created: "+ createdDate);
             binding.updatedAtText.setText("Updated: "+ updatedDate);
+            binding.pushedAtText.setText("Pushed: "+ pushedDate);
         } catch (ParseException e) {
             binding.createdAtText.setText("00-00-00");
             binding.updatedAtText.setText("00-00-00");

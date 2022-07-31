@@ -11,14 +11,22 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.ActivityGroup;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -34,17 +42,25 @@ import com.voidK.gitview.utils.mSharedPreferences;
 import com.voidK.gitview.viewmodels.HomeActivityViewModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.observers.DisposableObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @AndroidEntryPoint
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity{
     private ActivityHomeBinding binding;
 
     @Inject
@@ -52,10 +68,12 @@ public class HomeActivity extends AppCompatActivity {
     private final String TAG = getClass().getName() + "ANIK";
     HomeActivityViewModel viewModel;
     GitRepoRcAdapter gitRepoRcAdapter;
-    String[] sortItems = {"stars", "updated"};
     List<GitQueryRepoItem> repositories = new ArrayList<>();
     boolean mIsLoading, mIsLastPage;
     int currentPage = 0;
+    Handler handler;
+    Runnable runnable;
+    int INTERVAL = 30 * 60000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +82,38 @@ public class HomeActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         viewModel = new ViewModelProvider(this).get(HomeActivityViewModel.class);
 
+
+        Log.i(TAG, "sort item preselected onCreate: " + preferences.getSortItem());
+        viewModelObserver();
+        initRecyclerView();
+        initSortSpinner();
+        initSearchView();
+        fetchData();
+        periodicApiCall();
+
+    }
+
+
+
+    private void initSearchView() {
+        binding.searchView.setQuery("Android", false);
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Toast.makeText(HomeActivity.this, "Not Yet Implemented!", Toast.LENGTH_SHORT).show();
+                binding.searchView.onActionViewCollapsed();
+                binding.searchView.clearFocus();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+    }
+
+    private void viewModelObserver() {
         viewModel.getLiveData().observe(this, new Observer<GitQueryRepo>() {
             @Override
             public void onChanged(GitQueryRepo repos) {
@@ -77,14 +127,14 @@ public class HomeActivity extends AppCompatActivity {
                         public void run() {
                             mIsLoading = false;
                         }
-                    },2000);
+                    },1000);
                 } else {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             mIsLoading = false;
                         }
-                    },2000);
+                    },1000);
                     currentPage = currentPage - 1; // decreasing currentPage number to load that page again if it fails
                     binding.progressBar.setVisibility(View.GONE);
                     Toast.makeText(HomeActivity.this, "ERROR response", Toast.LENGTH_SHORT).show();
@@ -92,7 +142,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        initSortSpinner();
 
         viewModel.getAllQueryRepoList().observe(this, new Observer<List<GitQueryRepoItem>>() {
             @Override
@@ -104,6 +153,14 @@ public class HomeActivity extends AppCompatActivity {
                         repositories.clear();
                         repositories.addAll(gitQueryRepoItems);
                         currentPage = repositories.size()/10;
+
+                        //Sorting fore predefine sort item
+                        Log.i(TAG, "sort item preselected: " + preferences.getSortItem());
+                        if(!preferences.getSortItem().isEmpty() && preferences.getSortItem().equals("stars")){
+                           gitQueryRepoItems =  viewModel.sortByStars(gitQueryRepoItems);
+                        } else if(!preferences.getSortItem().isEmpty() && preferences.getSortItem().equals("updated")){
+                            gitQueryRepoItems =  viewModel.sortByUpdated(gitQueryRepoItems);
+                        }
                         setListItems(gitQueryRepoItems);
 
                         Log.d(TAG, "on changed first item: " + gitQueryRepoItems.get(0).getName() + " -- " + gitQueryRepoItems.get(0).getOwner().getAvatar_url());
@@ -113,10 +170,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
-
-        initRecyclerView();
-        fetchData();
-
     }
 
 
@@ -149,11 +202,26 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initSortSpinner() {
-        //Creating the ArrayAdapter instance having the country list
         SortSpinnerAdapter spinnerAdapter = new SortSpinnerAdapter(this, SortItems.getSortText(), SortItems.getImage());
-
-        //Setting the ArrayAdapter data on the Spinner
+        //Setting the custom adapter data on the Spinner
         binding.spinner.setAdapter(spinnerAdapter);
+
+
+        String sortItem = preferences.getSortItem();
+        if(!sortItem.isEmpty()){
+            if(sortItem.equals("stars")){
+                Log.i(TAG, "set item preselected: " + preferences.getSortItem());
+
+                binding.spinner.setSelection(0);
+            }
+            else if(sortItem.equals("updated")){
+                Log.i(TAG, "set item preselected: " + preferences.getSortItem());
+                binding.spinner.setSelection(1);
+                binding.spinner.setSelected(true);
+            }
+        }
+
+
         binding.spinner.setSpinnerEventsListener(new CustomSpinner.OnSpinnerEventsListener() {
             @Override
             public void onPopupWindowOpened(Spinner spinner) {
@@ -165,18 +233,27 @@ public class HomeActivity extends AppCompatActivity {
                 binding.spinner.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.sort_spinner_outline));
             }
         });
+        binding.spinner.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return false;
+            }
+        });
         binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 //Toast.makeText(HomeActivity.this, "selected " + i, Toast.LENGTH_SHORT).show();
-                if (i == 0) {
+                if (i == 0 ) {
+                    Log.i(TAG, "set sort items to stars");
+                    preferences.setSortItem("stars");
                     repositories = viewModel.sortByStars(repositories);
-                    setListItems(repositories);
                 } else {
+                    Log.i(TAG, "set sort items to updated");
+                    preferences.setSortItem("updated");
                     repositories = viewModel.sortByUpdated(repositories);
-                    setListItems(repositories);
                 }
+                setListItems(repositories);
             }
 
             @Override
@@ -235,4 +312,37 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void periodicApiCall() {
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                fetchNewData();
+                handler.postDelayed(this, INTERVAL);
+            }
+        };
+
+        handler.postDelayed(runnable, INTERVAL);
+
+    }
+
+    private void fetchNewData() {
+        viewModel.clearDatabase();
+        currentPage = 0;
+        String access_token = "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"; // demo access token
+        preferences.setToken(access_token);
+        currentPage = currentPage + 1;
+        // Query data
+        HashMap<String, Object> queryParams = new HashMap<>();
+        queryParams.put("q", "Android");
+        queryParams.put("sort", "updated"); // Can be one of: stars, forks, help-wanted-issues, updated
+        queryParams.put("order", "asc"); //Default: desc -- Can be one of: desc, asc
+        queryParams.put("per_page", 10); // Default: 30
+        queryParams.put("page", currentPage); // Default: 1
+
+        Log.i(TAG, "current page calling: "+ currentPage);
+        viewModel.repoQueryAPICall(HomeActivity.this, queryParams);
+    }
+
 }

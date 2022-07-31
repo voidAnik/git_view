@@ -52,6 +52,10 @@ public class HomeActivityViewModel extends ViewModel {
         retroRoomRepository.callAPI(queryParams, liveData);
     }
 
+    public void clearDatabase(){
+        retroRoomRepository.deleteRecords();
+    }
+
     public List<GitQueryRepoItem> sortByStars(List<GitQueryRepoItem> items){
         Comparator<GitQueryRepoItem> compareById = new Comparator<GitQueryRepoItem>() {
             @Override

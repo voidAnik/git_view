@@ -52,14 +52,19 @@ public class RetroRoomRepository {
     void insertRecords(List<GitQueryRepoItem> repoItems){
         gitQueryDao.insertRecords(repoItems);
     }
+    public void deleteRecords(){
+        gitQueryDao.deleteAllRecords();
+    }
 
     public void callAPI(HashMap<String, Object> queryParams, MutableLiveData<GitQueryRepo> liveData) {
         String end_point = context.getString(R.string.API_QUERY_REPO);
         Log.i(TAG, "end_point: "+ end_point);
         Call<GitQueryRepo> call = apiService.searchGitRepo(end_point, queryParams);
-        call.enqueue(new Callback<GitQueryRepo>() {
+
+        call.enqueue(new RetryCallback(call) {
             @Override
-            public void onResponse(@NonNull Call<GitQueryRepo> call, @NonNull Response<GitQueryRepo> response) {
+            public void onResponse(Call<GitQueryRepo> call, Response<GitQueryRepo> response) {
+                super.onResponse(call, response);
                 Log.i(TAG, "not checked response: " + response.body());
                 if (response.isSuccessful()) {
                     Log.i(TAG, "response: " + response.body().getItems().size());
@@ -74,7 +79,8 @@ public class RetroRoomRepository {
             }
 
             @Override
-            public void onFailure(@NonNull Call<GitQueryRepo> call, @NonNull Throwable t) {
+            public void onFailure(Call<GitQueryRepo> call, Throwable t) {
+                super.onFailure(call, t);
                 Log.e(TAG, "response: " + "onFailure");
                 liveData.postValue(null);
             }

@@ -22,4 +22,16 @@ public class mSharedPreferences {
         return mSharedPreferences.getString("token", "");
     }
 
+    public void setSortItem(String sortItem){
+        SharedPreferences mSharedPreferences = context.getSharedPreferences(Constants.SORT_TAG, Context.MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("sort_item", sortItem);
+        mEditor.apply();
+    }
+
+    public String getSortItem(){
+        SharedPreferences mSharedPreferences = context.getSharedPreferences(Constants.SORT_TAG, Context.MODE_PRIVATE);
+        return mSharedPreferences.getString("sort_item", "");
+    }
+
 }
