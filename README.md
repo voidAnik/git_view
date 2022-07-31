@@ -35,3 +35,15 @@ In short, this GitView Projects main feature is it search GitHub repositories wi
 <img src="ss/details_page.jpg" width="200">
 <img src="ss/browse_repo.jpg" width="200">
 
+## Future Scope
+
+- I made a search mechanism but couldn't finish due to lack of time. It can be implemented for other queries.
+- For pagination It's better to use Paging 3. To finish the project in time I have used manual pagination.
+## 🚀 About Me
+I'm a Android Developer...
+
+
+## 🔗 Links
+[![portfolio](https://img.shields.io/badge/github-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://github.com/voidAnik)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/anik--islam/)
+
