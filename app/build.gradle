@@ -31,6 +31,17 @@ android {
             resValue("string", "API_QUERY_REPO", "search/repositories")
         }
 
+        // For demo purpose only
+        flavorDimensions 'default'
+        productFlavors {
+            butterScotch {
+                dimension 'default'
+            }
+            ChocolateChips {
+                dimension 'default'
+            }
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -80,6 +91,5 @@ dependencies {
 
     //Circle ImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 
 }

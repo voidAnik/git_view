@@ -86,7 +86,7 @@ public class RepoDetailsActivity extends AppCompatActivity {
             binding.createdAtText.setText("Created: "+ createdDate);
             binding.updatedAtText.setText("Updated: "+ updatedDate);
             binding.pushedAtText.setText("Pushed: "+ pushedDate);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             binding.createdAtText.setText("00-00-00");
             binding.updatedAtText.setText("00-00-00");
             e.printStackTrace();
@@ -96,7 +96,7 @@ public class RepoDetailsActivity extends AppCompatActivity {
         binding.forkText.setText(item.getForks_count().toString() + " " + "forks");
     }
 
-    private String getConvertedDateTime(String created_at) throws ParseException {
+    private String getConvertedDateTime(String created_at) throws Exception {
         String[] splitString = created_at.split("T");
         String oldDateString = splitString[0];
         String oldTimeString = splitString[1].replace("Z", "");
