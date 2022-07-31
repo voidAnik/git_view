@@ -39,8 +39,6 @@ In short, this GitView Projects main feature is it search GitHub repositories wi
 
 - I made a search mechanism but couldn't finish due to lack of time. It can be implemented for other queries.
 - For pagination It's better to use Paging 3. To finish the project in time I have used manual pagination.
-## 🚀 About Me
-I'm a Android Developer...
 
 
 ## 🔗 Links
