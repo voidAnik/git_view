@@ -28,5 +28,10 @@ In short, this GitView Projects main feature is it search GitHub repositories wi
 - App's flavor has been added for different build types.
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+<img src="ss/home_page.jpg" width="200">
+<img src="ss/pagination.jpg" width="200">
+<img src="ss/sort_item.jpg" width="200">
+<img src="ss/search.jpg" width="200">
+<img src="ss/details_page.jpg" width="200">
+<img src="ss/browse_repo.jpg" width="200">
 
